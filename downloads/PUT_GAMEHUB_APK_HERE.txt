@@ -1,0 +1,3 @@
+After building your Android APK, rename it to GameHub.apk and place it in this downloads folder before uploading your website.
+
+The Download APK button points to: downloads/GameHub.apk

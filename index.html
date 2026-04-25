@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="en"><head>
+<link rel="icon" type="image/svg+xml" href="assets/gamehub-logo.svg"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GameHub - Play Browser Games</title><link rel="stylesheet" href="css/home.css"><script defer src="js/home.js"></script><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#22c55e">
+</head><body>
+<header class="site-header"><nav class="navbar"><a href="index.html" class="nav-logo"><img src="assets/gamehub-logo.svg" alt="GameHub Logo"><span>GameHub</span></a><button class="menu-toggle" aria-label="Open navigation menu"><span></span><span></span><span></span></button><ul class="nav-menu"><li><a href="index.html" class="nav-link active">🏠 Home</a></li><li><a href="games.html" class="nav-link">🎮 Games</a></li><li><a href="about.html" class="nav-link">📄 About</a></li><li><a href="download.html" class="nav-link">⬇️ APK</a></li></ul></nav></header>
+<main><section class="hero"><div class="hero-text"><span class="eyebrow">Classic games, now playable</span><h1>Welcome to <span>GameHub</span></h1><p class="hero-subtitle">Play Tic Tac Toe, Rock Paper Scissors and a full Chess game.</p><p class="hero-description">Choose a game, challenge a friend or play against the computer directly inside your browser.</p><div class="hero-actions"><a href="games.html" class="btn btn-primary">Play Now</a><a href="about.html" class="btn btn-ghost">Learn More</a></div></div><div class="hero-art"><div class="board"><div>X</div><div>O</div><div>♔</div><div>✊</div><div>🎮</div><div>⚽</div><div>♜</div><div>✂️</div><div>⭕</div></div></div></section>
+<section class="features"><article class="feature-card"><span>❌⭕</span><h2>Tic Tac Toe</h2><p>Play against a friend or a smart computer opponent.</p></article><article class="feature-card"><span>✌️✊✋</span><h2>Rock Paper Scissors</h2><p>Best quick match for instant fun.</p></article><article class="feature-card"><span>📲</span><h2>APK Ready</h2><p>Prepared with PWA support and a download page for your Android APK.</p></article></section></main>
+<footer class="footer"><p>&copy; 2026 GameHub. All rights reserved. Made with ❤️ for gamers worldwide.</p></footer>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  });
+}
+</script>
+
+</body></html>

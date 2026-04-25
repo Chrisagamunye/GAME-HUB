@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/svg+xml" href="assets/gamehub-logo.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#22c55e">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download GameHub APK</title>
+    <link rel="stylesheet" href="css/download.css">
+    <script defer src="js/download.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/gamehub-logo.svg" alt="GameHub Logo">
+                <span>GameHub</span>
+            </a>
+            <button class="menu-toggle" aria-label="Open navigation menu"><span></span><span></span><span></span></button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Home</a></li>
+                <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+                <li><a href="about.html" class="nav-link">📄 About</a></li>
+                <li><a href="download.html" class="nav-link active">⬇️ APK</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="download-hero">
+            <span class="eyebrow">Android ready</span>
+            <h1>Download GameHub App</h1>
+            <p>Users can install GameHub as a web app or download the Android APK when you upload the APK file to your website.</p>
+        </section>
+
+        <section class="download-card">
+            <img class="app-icon" src="assets/gamehub-logo.svg" alt="GameHub App Logo">
+            <div class="download-info">
+                <h2>GameHub for Android</h2>
+                <p>Play Chess, Tic Tac Toe and Rock Paper Scissors from your phone.</p>
+                <div class="button-row">
+                    <a class="btn btn-primary" href="downloads/GameHub.apk" download>⬇️ Download APK</a>
+                    <button class="btn btn-ghost" id="pwaInstallBtn">📲 Install Web App</button>
+                    <a class="btn btn-ghost" href="games.html">🎮 Play Online</a>
+                </div>
+                <div class="notice">
+                    Important: place your built APK file here: <strong>downloads/GameHub.apk</strong>. The button above is already linked to it.
+                </div>
+            </div>
+        </section>
+
+        <section class="steps">
+            <article class="step">
+                <span>1</span>
+                <h3>Build APK</h3>
+                <p>Use Android Studio, Capacitor, or Bubblewrap to turn this web app into an Android APK.</p>
+            </article>
+            <article class="step">
+                <span>2</span>
+                <h3>Upload APK</h3>
+                <p>Rename the APK to <strong>GameHub.apk</strong> and upload it into the <strong>downloads</strong> folder.</p>
+            </article>
+            <article class="step">
+                <span>3</span>
+                <h3>Share Link</h3>
+                <p>Send users to <strong>download.html</strong> so they can download the APK or install the web app.</p>
+            </article>
+        </section>
+    </main>
+
+    <footer class="footer"><p>&copy; 2026 GameHub. All rights reserved. Made with ❤️ for gamers worldwide.</p></footer>
+</body>
+</html>

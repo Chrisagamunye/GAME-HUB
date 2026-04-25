@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/svg+xml" href="assets/gamehub-logo.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playable Games - GameHub</title>
+    <link rel="stylesheet" href="css/games.css">
+    <script defer src="js/games.js"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#22c55e">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/gamehub-logo.svg" alt="GameHub Logo">
+                <span>GameHub</span>
+            </a>
+            <button class="menu-toggle" aria-label="Open navigation menu"><span></span><span></span><span></span></button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Home</a></li>
+                <li><a href="games.html" class="nav-link active">🎮 Games</a></li>
+                <li><a href="about.html" class="nav-link">📄 About</a></li>
+                <li><a href="download.html" class="nav-link">⬇️ APK</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="games-hero">
+            <span class="eyebrow">Playable in browser</span>
+            <h1>Choose & Play</h1>
+            <p>Play classic games directly in your browser. This version focuses on clean, APK-ready browser games.</p>
+        </section>
+
+        <section class="game-picker">
+            <button class="picker-btn active" data-game="tictactoe">❌⭕ Tic Tac Toe</button>
+            <button class="picker-btn" data-game="rps">✌️✊✋ Rock Paper Scissors</button>
+            <button class="picker-btn" data-game="chess">♟️ Full Chess</button>
+        </section>
+
+        <section class="play-area">
+            <aside class="score-panel">
+                <h2>Scoreboard</h2>
+                <div class="score-row"><span>Player / White</span><strong id="playerScore">0</strong></div>
+                <div class="score-row"><span>Computer / Black</span><strong id="computerScore">0</strong></div>
+                <button class="small-btn" id="resetScores">Reset Scores</button>
+            </aside>
+
+            <section class="game-screen">
+                <div class="game-header">
+                    <h2 id="gameTitle">Tic Tac Toe</h2>
+                    <p id="gameStatus">Choose a mode and start playing.</p>
+                </div>
+
+                <div class="mode-row" id="modeRow">
+                    <button class="mode-btn active" data-mode="ai">🤖 Vs Computer</button>
+                    <button class="mode-btn" data-mode="pvp">👥 Vs Player</button>
+                </div>
+
+                <div id="gameContainer"></div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="newRound">New Round</button>
+                    <button class="btn btn-ghost" id="howToPlayBtn">How to Play</button>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <div class="modal hidden" id="helpModal">
+        <div class="modal-box">
+            <button class="close-modal" id="closeHelp">×</button>
+            <h2 id="helpTitle">How to Play</h2>
+            <p id="helpText"></p>
+        </div>
+    </div>
+
+    <footer class="footer"><p>&copy; 2026 GameHub. All rights reserved. Made with ❤️ for gamers worldwide.</p></footer>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
