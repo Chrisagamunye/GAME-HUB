@@ -189,13 +189,15 @@ function renderTicTacToe() {
 }
 
 /* ROCK PAPER SCISSORS WITH HAND DISPLAY */
+/* ROCK PAPER SCISSORS WITH TRUE LOCAL MULTIPLAYER */
 function renderRPS() {
-    setStatus("Choose your hand.");
+    setStatus(mode === "ai" ? "Choose your hand." : "Player 1, choose your hand secretly.");
+
     gameContainer.innerHTML = `
         <div class="rps-wrap">
             <div class="hand-display">
                 <div class="hand-card">
-                    <strong>You</strong>
+                    <strong>You / Player 1</strong>
                     <div class="big-hand" id="playerHand">❔</div>
                 </div>
                 <div class="versus">VS</div>
@@ -204,295 +206,121 @@ function renderRPS() {
                     <div class="big-hand" id="computerHand">❔</div>
                 </div>
             </div>
+
             <div class="choices">
                 <button class="choice-btn" data-choice="rock">✊<span>Rock</span></button>
                 <button class="choice-btn" data-choice="paper">✋<span>Paper</span></button>
                 <button class="choice-btn" data-choice="scissors">✌️<span>Scissors</span></button>
             </div>
-            <div class="result-box" id="rpsResult">Pick one hand to begin.</div>
+
+            <div class="result-box" id="rpsResult">
+                ${mode === "ai" ? "Pick one hand to begin." : "Player 1 should choose first. The choice will be hidden."}
+            </div>
         </div>
     `;
 
     const resultBox = document.getElementById("rpsResult");
     const playerHand = document.getElementById("playerHand");
     const computerHand = document.getElementById("computerHand");
+
     const choices = ["rock", "paper", "scissors"];
-    const emojis = { rock: "✊", paper: "✋", scissors: "✌️" };
+    const emojis = {
+        rock: "✊",
+        paper: "✋",
+        scissors: "✌️"
+    };
+
+    let playerOneChoice = null;
+    let waitingForPlayerTwo = false;
 
     document.querySelectorAll(".choice-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            const player = btn.dataset.choice;
-            const opponent = choices[Math.floor(Math.random() * choices.length)];
-            const result = getRPSWinner(player, opponent);
+            const selected = btn.dataset.choice;
 
-            playerHand.textContent = emojis[player];
-            computerHand.textContent = emojis[opponent];
+            // VS COMPUTER MODE
+            if (mode === "ai") {
+                const opponent = choices[Math.floor(Math.random() * choices.length)];
+                const result = getRPSWinner(selected, opponent);
+
+                playerHand.textContent = emojis[selected];
+                computerHand.textContent = emojis[opponent];
+
+                if (result === "player") {
+                    addPlayerPoint();
+                    setStatus("You win this round!");
+                    resultBox.textContent = `You chose ${selected}. Computer chose ${opponent}. You win!`;
+                } else if (result === "computer") {
+                    addComputerPoint();
+                    setStatus("Computer wins this round.");
+                    resultBox.textContent = `You chose ${selected}. Computer chose ${opponent}. Computer wins.`;
+                } else {
+                    setStatus("Draw round.");
+                    resultBox.textContent = `You both chose ${selected}. It is a draw.`;
+                }
+
+                return;
+            }
+
+            // VS PLAYER MODE
+            if (!waitingForPlayerTwo) {
+                playerOneChoice = selected;
+                waitingForPlayerTwo = true;
+
+                // Hide Player 1's real choice
+                playerHand.textContent = "✅";
+                computerHand.textContent = "❔";
+
+                setStatus("Player 2, choose your hand.");
+                resultBox.textContent = "Player 1 has chosen. Now Player 2 should choose.";
+                return;
+            }
+
+            const playerTwoChoice = selected;
+            const result = getRPSWinner(playerOneChoice, playerTwoChoice);
+
+            playerHand.textContent = emojis[playerOneChoice];
+            computerHand.textContent = emojis[playerTwoChoice];
 
             if (result === "player") {
                 addPlayerPoint();
-                setStatus("You win this round!");
-                resultBox.textContent = `You chose ${player}. Opponent chose ${opponent}. You win!`;
+                setStatus("Player 1 wins this round!");
+                resultBox.textContent = `Player 1 chose ${playerOneChoice}. Player 2 chose ${playerTwoChoice}. Player 1 wins!`;
             } else if (result === "computer") {
                 addComputerPoint();
-                setStatus("Opponent wins this round.");
-                resultBox.textContent = `You chose ${player}. Opponent chose ${opponent}. Opponent wins.`;
+                setStatus("Player 2 wins this round!");
+                resultBox.textContent = `Player 1 chose ${playerOneChoice}. Player 2 chose ${playerTwoChoice}. Player 2 wins!`;
             } else {
                 setStatus("Draw round.");
-                resultBox.textContent = `You both chose ${player}. It is a draw.`;
+                resultBox.textContent = `Both players chose ${playerOneChoice}. It is a draw.`;
             }
+
+            playerOneChoice = null;
+            waitingForPlayerTwo = false;
+
+            setTimeout(() => {
+                if (currentGame === "rps" && mode === "pvp") {
+                    playerHand.textContent = "❔";
+                    computerHand.textContent = "❔";
+                    setStatus("Player 1, choose your hand secretly.");
+                    resultBox.textContent = "Next round: Player 1 should choose first.";
+                }
+            }, 1600);
         });
     });
 }
-
 function getRPSWinner(player, computer) {
     if (player === computer) return "draw";
+
     if (
         (player === "rock" && computer === "scissors") ||
         (player === "paper" && computer === "rock") ||
         (player === "scissors" && computer === "paper")
-    ) return "player";
+     {
+        return "player";
+    }
+
     return "computer";
 }
-
-
-/* REALISTIC FOOTBALL PENALTY */
-function renderPenalty() {
-    setStatus("Penalty shootout: choose your target, set power, then shoot.");
-
-    let playerGoals = 0;
-    let keeperSaves = 0;
-    let round = 1;
-    let selectedZone = null;
-    let power = 55;
-    let powerDirection = 1;
-    let powerTimer = null;
-    let locked = false;
-
-    gameContainer.innerHTML = `
-        <div class="football-wrap">
-            <div class="match-scoreboard">
-                <div><strong>You</strong><span id="footballPlayerGoals">0</span></div>
-                <div class="shootout-round">Penalty <span id="footballRound">1</span>/5</div>
-                <div><strong>Keeper</strong><span id="footballKeeperSaves">0</span></div>
-            </div>
-
-            <div class="stadium">
-                <div class="crowd"></div>
-                <div class="goal-post">
-                    <button class="target-zone top-left" data-zone="top-left">Top Left</button>
-                    <button class="target-zone top-center" data-zone="top-center">Top Center</button>
-                    <button class="target-zone top-right" data-zone="top-right">Top Right</button>
-                    <button class="target-zone mid-left" data-zone="mid-left">Mid Left</button>
-                    <button class="target-zone mid-center" data-zone="mid-center">Center</button>
-                    <button class="target-zone mid-right" data-zone="mid-right">Mid Right</button>
-                    <button class="target-zone low-left" data-zone="low-left">Low Left</button>
-                    <button class="target-zone low-center" data-zone="low-center">Low Center</button>
-                    <button class="target-zone low-right" data-zone="low-right">Low Right</button>
-                    <div class="goalkeeper" id="goalkeeper">🧤</div>
-                    <div class="football-ball" id="footballBall">⚽</div>
-                </div>
-                <div class="pitch-lines"></div>
-                <div class="penalty-spot"></div>
-                <div class="player-boot">👟</div>
-            </div>
-
-            <div class="power-panel">
-                <div class="power-label">Shot Power: <span id="powerValue">55</span>%</div>
-                <div class="power-meter">
-                    <div class="power-fill" id="powerFill"></div>
-                    <div class="sweet-spot"></div>
-                </div>
-                <p class="football-tip">Tip: 65%–85% gives the best chance. Too low is weak. Too high may go off target.</p>
-            </div>
-
-            <div class="football-actions">
-                <button class="btn btn-primary" id="shootBtn" disabled>Shoot</button>
-                <button class="btn btn-ghost" id="resetFootballBtn">Restart Shootout</button>
-            </div>
-
-            <div class="result-box" id="footballResult">Select a target in the goal.</div>
-        </div>
-    `;
-
-    const ball = document.getElementById("footballBall");
-    const keeper = document.getElementById("goalkeeper");
-    const resultBox = document.getElementById("footballResult");
-    const shootBtn = document.getElementById("shootBtn");
-    const resetFootballBtn = document.getElementById("resetFootballBtn");
-    const powerValue = document.getElementById("powerValue");
-    const powerFill = document.getElementById("powerFill");
-    const playerGoalsEl = document.getElementById("footballPlayerGoals");
-    const keeperSavesEl = document.getElementById("footballKeeperSaves");
-    const roundEl = document.getElementById("footballRound");
-
-    const zonePositions = {
-        "top-left": { x: -165, y: -210 },
-        "top-center": { x: 0, y: -220 },
-        "top-right": { x: 165, y: -210 },
-        "mid-left": { x: -170, y: -145 },
-        "mid-center": { x: 0, y: -150 },
-        "mid-right": { x: 170, y: -145 },
-        "low-left": { x: -165, y: -80 },
-        "low-center": { x: 0, y: -85 },
-        "low-right": { x: 165, y: -80 }
-    };
-
-    const keeperZones = Object.keys(zonePositions);
-
-    function updateFootballScore() {
-        playerGoalsEl.textContent = playerGoals;
-        keeperSavesEl.textContent = keeperSaves;
-        roundEl.textContent = Math.min(round, 5);
-    }
-
-    function updatePower() {
-        if (locked) return;
-        power += powerDirection * 2;
-        if (power >= 100) {
-            power = 100;
-            powerDirection = -1;
-        }
-        if (power <= 30) {
-            power = 30;
-            powerDirection = 1;
-        }
-        powerValue.textContent = power;
-        powerFill.style.width = `${power}%`;
-    }
-
-    function startPowerMeter() {
-        clearInterval(powerTimer);
-        powerTimer = setInterval(updatePower, 55);
-    }
-
-    function resetBallAndKeeper() {
-        ball.style.transition = "none";
-        keeper.style.transition = "none";
-        ball.style.transform = "translate(-50%, 0)";
-        keeper.style.transform = "translateX(-50%)";
-        keeper.textContent = "🧤";
-
-        setTimeout(() => {
-            ball.style.transition = "transform .75s cubic-bezier(.2,.8,.2,1)";
-            keeper.style.transition = "transform .55s ease";
-        }, 50);
-    }
-
-    function resetShootout() {
-        playerGoals = 0;
-        keeperSaves = 0;
-        round = 1;
-        selectedZone = null;
-        locked = false;
-        updateFootballScore();
-        resetBallAndKeeper();
-        shootBtn.disabled = true;
-        document.querySelectorAll(".target-zone").forEach(z => z.classList.remove("selected"));
-        resultBox.textContent = "Select a target in the goal.";
-        setStatus("Penalty shootout restarted. Choose your target.");
-        startPowerMeter();
-    }
-
-    document.querySelectorAll(".target-zone").forEach(zone => {
-        zone.addEventListener("click", () => {
-            if (locked) return;
-            document.querySelectorAll(".target-zone").forEach(z => z.classList.remove("selected"));
-            zone.classList.add("selected");
-            selectedZone = zone.dataset.zone;
-            shootBtn.disabled = false;
-            resultBox.textContent = `Target selected: ${zone.textContent}. Now click Shoot.`;
-        });
-    });
-
-    shootBtn.addEventListener("click", () => {
-        if (!selectedZone || locked) return;
-
-        locked = true;
-        clearInterval(powerTimer);
-        shootBtn.disabled = true;
-
-        const keeperChoice = keeperZones[Math.floor(Math.random() * keeperZones.length)];
-        const shot = zonePositions[selectedZone];
-        const dive = zonePositions[keeperChoice];
-
-        const isWeak = power < 45;
-        const isTooHigh = power > 92;
-        const sameArea = selectedZone === keeperChoice;
-        const closeSave = selectedZone.split("-")[1] === keeperChoice.split("-")[1] && power < 75;
-
-        let finalX = shot.x;
-        let finalY = shot.y;
-
-        if (isTooHigh) {
-            finalY -= 70;
-            finalX += Math.random() > 0.5 ? 45 : -45;
-        }
-
-        ball.style.transform = `translate(calc(-50% + ${finalX}px), ${finalY}px) scale(.72)`;
-        keeper.style.transform = `translate(calc(-50% + ${dive.x * 0.72}px), ${dive.y * 0.34}px) rotate(${dive.x < 0 ? -18 : dive.x > 0 ? 18 : 0}deg)`;
-
-        setTimeout(() => {
-            let outcome = "";
-
-            if (isTooHigh) {
-                keeperSaves++;
-                addComputerPoint();
-                outcome = "Over the bar! Too much power.";
-                setStatus("Missed! The ball went over.");
-            } else if (isWeak) {
-                keeperSaves++;
-                addComputerPoint();
-                outcome = "Weak shot. The keeper collects it easily.";
-                setStatus("Saved! Shot was too weak.");
-            } else if (sameArea || closeSave) {
-                keeperSaves++;
-                addComputerPoint();
-                keeper.textContent = "🧤⚽";
-                outcome = `Saved! Keeper guessed ${keeperChoice.replace("-", " ")}.`;
-                setStatus("Saved by the goalkeeper!");
-            } else {
-                playerGoals++;
-                addPlayerPoint();
-                outcome = `GOAL! Beautiful shot to ${selectedZone.replace("-", " ")}.`;
-                setStatus("Goal! Excellent penalty.");
-            }
-
-            round++;
-            updateFootballScore();
-            resultBox.textContent = outcome;
-
-            if (round > 5) {
-                locked = true;
-                clearInterval(powerTimer);
-                const finalMessage = playerGoals > keeperSaves
-                    ? `You win the shootout ${playerGoals}-${keeperSaves}!`
-                    : playerGoals < keeperSaves
-                        ? `Keeper wins the shootout ${keeperSaves}-${playerGoals}.`
-                        : `Shootout draw ${playerGoals}-${keeperSaves}.`;
-                resultBox.textContent += ` ${finalMessage}`;
-                setStatus(finalMessage);
-                return;
-            }
-
-            setTimeout(() => {
-                locked = false;
-                selectedZone = null;
-                document.querySelectorAll(".target-zone").forEach(z => z.classList.remove("selected"));
-                resetBallAndKeeper();
-                resultBox.textContent += " Select your next target.";
-                setStatus(`Penalty ${round}/5. Choose your target.`);
-                startPowerMeter();
-            }, 1400);
-        }, 820);
-    });
-
-    resetFootballBtn.addEventListener("click", resetShootout);
-
-    updateFootballScore();
-    resetBallAndKeeper();
-    startPowerMeter();
-}
-
 
 /* FULL CHESS */
 function renderFullChess() {
